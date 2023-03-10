@@ -1,36 +1,32 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Image } from './ImageGalleryItem.styled';
 import { Modal } from '../modal/Modal';
 
-export class ImageGalleryItem extends Component {
-  state = {
-    showModal: false,
-  };
+export const ImageGalleryItem = ({ webformatURL, tags, largeImageURL }) => {
+  const [showModal, setShowModal] = useState(false);
 
-  render() {
-    return (
-      <>
-        <Image
-          onClick={() => {
-            this.setState({ showModal: true });
+  return (
+    <>
+      <Image
+        onClick={() => {
+          setShowModal(true);
+        }}
+        src={webformatURL}
+        alt={tags}
+      />
+      {showModal && (
+        <Modal
+          onClose={() => {
+            setShowModal(false);
           }}
-          src={this.props.webformatURL}
-          alt={this.props.tags}
-        />
-        {this.state.showModal && (
-          <Modal
-            onClose={() => {
-              this.setState({ showModal: false });
-            }}
-          >
-            <img src={this.props.largeImageURL} alt={this.props.tags} />
-          </Modal>
-        )}
-      </>
-    );
-  }
-}
+        >
+          <img src={largeImageURL} alt={tags} />
+        </Modal>
+      )}
+    </>
+  );
+};
 
 ImageGalleryItem.propTypes = {
   webformatURL: PropTypes.string.isRequired,
