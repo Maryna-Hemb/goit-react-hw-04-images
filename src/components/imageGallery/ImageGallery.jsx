@@ -17,60 +17,40 @@ export const ImageGallery = ({ queryName }) => {
   useEffect(() => {
     if (queryName) {
       setPage(1);
+    }
+  }, [queryName]);
+
+  useEffect(() => {
+    if (queryName.length === 0) {
+      return;
+    } else {
       setStatus('pending');
       async function FeatchDataImages() {
         try {
-          console.log('перший запит');
-          const galleryMake = await FeatchImages(queryName, 1, perPage);
-          setSearchImages(galleryMake.hits);
+          console.log('імя запиту:', queryName);
+          console.log('номер сторінки:', page);
+          const galleryMake = await FeatchImages(queryName, page, perPage);
           setStatus('resolved');
+          if (page === 1) {
+            setSearchImages(galleryMake.hits);
+          } else {
+            setSearchImages(prev => [...prev, ...galleryMake.hits]);
+          }
+
           if (galleryMake.hits.length === 0 || queryName === '') {
             toast.error(
               'There are no such images. Please enter a valid image title...'
             );
             setStatus('idle');
           }
-          if (Math.ceil(galleryMake.totalHits / perPage) > perPage) {
+          if (Math.ceil(galleryMake.totalHits / perPage) > page) {
             setShowLoadMore(true);
           }
-        } catch (error) {}
+        } catch (error) {
+          console.log(error);
+        }
       }
       FeatchDataImages();
-    }
-  }, [queryName, perPage]);
-
-  useEffect(() => {
-    if (queryName.length === 0 || page === 1) {
-      console.log('умова на повернення, якщо сторінка перша');
-      return;
-    } else {
-      if (page > 1) {
-        setStatus('pending');
-        async function FeatchDataImages() {
-          try {
-            console.log(queryName);
-            console.log(page);
-            console.log('всі окрім першої сторінки запит');
-            const galleryMake = await FeatchImages(queryName, page, perPage);
-            setSearchImages(prev => [...prev, ...galleryMake.hits]);
-
-            setStatus('resolved');
-            if (galleryMake.hits.length === 0 || queryName === '') {
-              toast.error(
-                'There are no such images. Please enter a valid image title...'
-              );
-              setStatus('idle');
-            }
-            if (Math.ceil(galleryMake.totalHits / perPage) > page) {
-              setShowLoadMore(true);
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        }
-        FeatchDataImages();
-      }
-      return;
     }
   }, [queryName, page, perPage]);
 
