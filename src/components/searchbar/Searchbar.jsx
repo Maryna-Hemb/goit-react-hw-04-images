@@ -17,7 +17,7 @@ const initialValues = {
 export const Searchbar = ({ onAddnewQueryName }) => {
   const hendleSubmit = (value, { resetForm }) => {
     if (value.queryName.trim() !== '') {
-      console.log({ ...value });
+      // console.log({ ...value });
       onAddnewQueryName({ ...value });
       resetForm();
     } else {
